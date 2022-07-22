@@ -1,15 +1,13 @@
 package com.trendyol.backend.api.controllers;
 
 import com.trendyol.backend.business.abstracts.UserService;
-import com.trendyol.backend.business.concretes.UserManager;
 import com.trendyol.backend.core.utilities.results.DataResult;
-import com.trendyol.backend.core.utilities.results.SuccessDataResult;
-import com.trendyol.backend.dataAccsess.abstracts.UserDao;
+import com.trendyol.backend.core.utilities.results.Result;
 import com.trendyol.backend.entities.concretes.User;
 import com.trendyol.backend.entities.dtos.UserDto;
 import org.springframework.web.bind.annotation.*;
 
-import javax.xml.crypto.Data;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -23,7 +21,7 @@ public class UserController {
     }
 
     @PostMapping("/createUser")
-    public DataResult<User> createUser(@RequestBody User user) {
+    public DataResult<UserDto> createUser(@RequestBody User user) {
         return this.userService.add(user);
     }
 
@@ -36,6 +34,16 @@ public class UserController {
     @GetMapping("/getUserByEmail")
     public DataResult<UserDto> getUserByEmail(@RequestParam("email") String email) {
         return this.userService.getUserByEmail(email);
+    }
+
+    @GetMapping("/getAllUser")
+    public DataResult<List<UserDto>> getAllUser() {
+        return this.userService.getAllUser();
+    }
+
+    @DeleteMapping("/deleteUserByEmail")
+    public Result deleteUserByEmail(@RequestParam("email") String email) {
+        return this.userService.deleteUserByEmail(email);
     }
 
 }
