@@ -5,17 +5,19 @@ import com.trendyol.backend.core.utilities.results.DataResult;
 import com.trendyol.backend.core.utilities.results.Result;
 import com.trendyol.backend.entities.concretes.User;
 import com.trendyol.backend.entities.dtos.UserDto;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
-public class UserController {
 
+public class UserController {
 
     private UserService userService;
 
+    @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
@@ -26,7 +28,7 @@ public class UserController {
     }
 
     @GetMapping("/getUserById/{id}")
-    public DataResult<UserDto> getUserById(@PathVariable("id") String id) {
+    public DataResult<User> getUserById(@PathVariable("id") String id) {
 
         return this.userService.getUserById(id);
     }
@@ -45,5 +47,12 @@ public class UserController {
     public Result deleteUserByEmail(@RequestParam("email") String email) {
         return this.userService.deleteUserByEmail(email);
     }
+
+    @PutMapping("/updateUserEmailById/{id}")
+    public Result updateEmailUserById(@PathVariable("id") String id, @RequestBody User user) {
+        Result result = this.userService.updateEmailUserById(user, id);
+        return result;
+    }
+
 
 }

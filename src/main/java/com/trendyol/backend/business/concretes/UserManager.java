@@ -9,7 +9,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,14 +40,22 @@ public class UserManager implements UserService {
     }
 
     @Override
-    public DataResult<UserDto> getUserById(String id) {
-        return new SuccessDataResult<>(this.userDao.findUserById(id), "user found");
+    public DataResult<User> getUserById(String id) {
+        User userById = this.userDao.findUserById(id);
+        if (userById == null) {
+            final ErrorDataResult<User> user_not_found = new ErrorDataResult<>(null, "user not found");
+            return user_not_found;
+        }
+        return new SuccessDataResult<>(userById, "user found");
     }
 
     @Override
     public DataResult<UserDto> getUserByEmail(String email) {
         User userByEmail = this.userDao.findOneUserByEmail(email);
-
+        if (userByEmail == null) {
+            final ErrorDataResult<UserDto> user_not_found = new ErrorDataResult<>(null, "user not found");
+            return user_not_found;
+        }
         UserDto map = this.modelMapper.map(userByEmail, UserDto.class);
         SuccessDataResult<UserDto> user_found_by_email = new SuccessDataResult<>(map, "user found by email");
         return user_found_by_email;
@@ -73,5 +80,15 @@ public class UserManager implements UserService {
         }
         SuccessResult successResult = new SuccessResult("User deleted");
         return successResult;
+    }
+
+    @Override
+    public Result updateEmailUserById(User user, String id) {
+        //   final User userById = this.userDao.findUserById(id);//find user
+        // userById.setEmail(user.getEmail());//set user email who found
+        // this.userDao.save(userById);//save updated user
+
+        this.userDao.save(user);// if user exist update user but not exist insert one user
+        return new SuccessResult("user updated");
     }
 }
