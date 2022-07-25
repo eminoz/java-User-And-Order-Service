@@ -30,8 +30,8 @@ public class UserManager implements UserService {
         String email = user.getEmail();
         User userByEmail = this.userDao.findOneUserByEmail(email);
         if (userByEmail != null) {
-            final ErrorDataResult<UserDto> user_alredy_exist = new ErrorDataResult<>(null, "user alredy exist");
-            return user_alredy_exist;
+            final ErrorDataResult<UserDto> user_already_exist = new ErrorDataResult<>(null, "user already exist");
+            return user_already_exist;
         }
         final User insert = this.userDao.insert(user);
         final UserDto userDto = this.modelMapper.map(insert, UserDto.class);//Burada kayıt frontende döneceğimiz verilere çevirmiş oluyoruz
