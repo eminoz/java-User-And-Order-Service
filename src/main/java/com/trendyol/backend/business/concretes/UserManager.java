@@ -84,11 +84,15 @@ public class UserManager implements UserService {
 
     @Override
     public Result updateEmailUserById(User user, String id) {
-        //   final User userById = this.userDao.findUserById(id);//find user
-        // userById.setEmail(user.getEmail());//set user email who found
-        // this.userDao.save(userById);//save updated user
+        User oneUserByEmail = this.userDao.findOneUserByEmail(user.getEmail());
+        if (oneUserByEmail != null) {
+            return new ErrorResult("already exist in this emial");
+        }
+        User userById = this.userDao.findUserById(id);//find user
+        userById.setEmail(user.getEmail());//set user email who found
+        this.userDao.save(userById);//save updated user
 
-        this.userDao.save(user);// if user exist update user but not exist insert one user
+        //  this.userDao.save(user);// if user exist update user but not exist insert one user
         return new SuccessResult("user updated");
     }
 }
