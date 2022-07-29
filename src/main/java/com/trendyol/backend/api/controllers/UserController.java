@@ -22,7 +22,7 @@ public class UserController {
     }
 
     @GetMapping("/getUserById/{id}")
-    public DataResult<User> getUserById(@PathVariable("id") String id) {
+    public DataResult<UserDto> getUserById(@PathVariable("id") String id) {
 
         return this.userService.getUserById(id);
     }

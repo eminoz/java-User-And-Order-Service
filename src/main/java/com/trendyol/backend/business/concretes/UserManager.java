@@ -26,13 +26,14 @@ public class UserManager implements UserService {
 
 
     @Override
-    public DataResult<User> getUserById(String id) {
+    public DataResult<UserDto> getUserById(String id) {
         User userById = this.userDao.findUserById(id);
         if (userById == null) {
-            final ErrorDataResult<User> user_not_found = new ErrorDataResult<>(null, "user not found");
+            ErrorDataResult<UserDto> user_not_found = new ErrorDataResult<>(null, "user not found");
             return user_not_found;
         }
-        return new SuccessDataResult<>(userById, "user found");
+        UserDto map = this.modelMapper.map(userById, UserDto.class);
+        return new SuccessDataResult<>(map, "user found");
     }
 
     @Override

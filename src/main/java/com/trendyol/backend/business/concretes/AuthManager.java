@@ -45,7 +45,8 @@ public class AuthManager implements AuthService {
             final ErrorDataResult<UserDto> user_already_exist = new ErrorDataResult<>(null, "user already exist");
             return user_already_exist;
         }
-        user.setPassword(this.passwordEncoder.encode(user.getPassword()));
+        // user.setPassword(this.passwordEncoder.encode(user.getPassword()));
+        user.setPassword(user.getPassword());
         User insert = this.userDao.insert(user);
         UserDto userDto = this.modelMapper.map(insert, UserDto.class);//Burada kayıt frontende döneceğimiz verilere çevirmiş oluyoruz
         return new

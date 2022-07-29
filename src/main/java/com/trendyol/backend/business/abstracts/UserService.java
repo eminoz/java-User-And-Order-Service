@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface UserService {
 
-    DataResult<User> getUserById(String id);
+    DataResult<UserDto> getUserById(String id);
 
     DataResult<UserDto> getUserByEmail(String email);
 

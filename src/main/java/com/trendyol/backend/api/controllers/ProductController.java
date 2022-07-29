@@ -31,7 +31,7 @@ public class ProductController {
     }
 
     @GetMapping("/getAll")
-    public DataResult<List<Product>> getAll(){
+    public DataResult<List<Product>> getAll() {
         return this.productService.getAll();
     }
 

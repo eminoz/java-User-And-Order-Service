@@ -1,14 +1,14 @@
 package com.trendyol.backend.business.concretes;
 
-import com.mongodb.client.result.UpdateResult;
 import com.trendyol.backend.business.abstracts.OrderService;
 import com.trendyol.backend.core.utilities.results.DataResult;
 import com.trendyol.backend.core.utilities.results.Result;
 import com.trendyol.backend.core.utilities.results.SuccessDataResult;
 import com.trendyol.backend.core.utilities.results.SuccessResult;
 import com.trendyol.backend.dataAccsess.abstracts.UserDao;
-import com.trendyol.backend.entities.concretes.ListOfOrder;
+import com.trendyol.backend.entities.concretes.Product;
 import com.trendyol.backend.entities.concretes.User;
+import com.trendyol.backend.entities.dtos.OrderDto;
 import com.trendyol.backend.entities.dtos.UserDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,18 +19,24 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
 
 @Service
 public class OrderManager implements OrderService {
     private UserDao userDao;
     private final ModelMapper modelMapper;
-    @Autowired
+    private ProductManager productManager;
     protected MongoTemplate mongoTemplate;
 
+
     @Autowired
-    public OrderManager(UserDao userDao, ModelMapper modelMapper) {
+    public OrderManager(UserDao userDao, ModelMapper modelMapper, ProductManager productManager) {
         this.userDao = userDao;
         this.modelMapper = modelMapper;
+        this.productManager = productManager;
     }
 
     @Override
@@ -49,6 +55,23 @@ public class OrderManager implements OrderService {
         User save = this.userDao.save(userById);// update user order and save
         UserDto map = this.modelMapper.map(save, UserDto.class); // map user to userDto
         return new SuccessDataResult<>(map, "updated user");
+    }
+
+    @Override
+    public DataResult<OrderDto> getUserOrders(String id) {
+        User userById = this.userDao.findUserById(id);
+        AtomicInteger sum = new AtomicInteger();
+        userById.getListOfOrders().stream().map(e -> {
+            DataResult<Product> byProductName = this.productManager.getByProductName(e.getProductId());
+            Float price = byProductName.getData().getPrice();
+            float v = e.getQuantity() * price;
+            sum.addAndGet((int) v);
+            return sum;
+        }).collect(Collectors.toList());
+        userById.setTotalPrice(sum.get());
+        OrderDto map = this.modelMapper.map(userById, OrderDto.class);
+        SuccessDataResult<OrderDto> user_orders = new SuccessDataResult<>(map, "user orders");
+        return user_orders;
     }
 
     public void addOrder(User user) {
