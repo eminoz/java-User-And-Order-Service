@@ -1,10 +1,7 @@
 package com.trendyol.backend.business.concretes;
 
 import com.trendyol.backend.business.abstracts.OrderService;
-import com.trendyol.backend.core.utilities.results.DataResult;
-import com.trendyol.backend.core.utilities.results.Result;
-import com.trendyol.backend.core.utilities.results.SuccessDataResult;
-import com.trendyol.backend.core.utilities.results.SuccessResult;
+import com.trendyol.backend.core.utilities.results.*;
 import com.trendyol.backend.dataAccsess.abstracts.UserDao;
 import com.trendyol.backend.entities.concretes.Product;
 import com.trendyol.backend.entities.concretes.User;
@@ -59,8 +56,16 @@ public class OrderManager implements OrderService {
 
     @Override
     public DataResult<OrderDto> getUserOrders(String id) {
-        User userById = this.userDao.findUserById(id);
-        AtomicInteger sum = new AtomicInteger();
+        User userById = this.userDao.findUserById(id);//get user from user repo by id
+        if (userById.getListOfOrders() == null || userById.getListOfOrders().isEmpty()) {
+            ErrorDataResult<OrderDto> orderDtoErrorDataResult = new ErrorDataResult<>(null, "order is empty");
+            return orderDtoErrorDataResult;
+        }
+        AtomicInteger sum = new AtomicInteger();// introduce a atomic integer to sum total price
+        /*
+         * I fetched product price from product repository  for multiplication with quantity per order
+         *
+         * */
         userById.getListOfOrders().stream().map(e -> {
             DataResult<Product> byProductName = this.productManager.getByProductName(e.getProductId());
             Float price = byProductName.getData().getPrice();
@@ -68,8 +73,8 @@ public class OrderManager implements OrderService {
             sum.addAndGet((int) v);
             return sum;
         }).collect(Collectors.toList());
-        userById.setTotalPrice(sum.get());
-        OrderDto map = this.modelMapper.map(userById, OrderDto.class);
+        userById.setTotalPrice(sum.get()); //set current user price
+        OrderDto map = this.modelMapper.map(userById, OrderDto.class); // map user to orderDto
         SuccessDataResult<OrderDto> user_orders = new SuccessDataResult<>(map, "user orders");
         return user_orders;
     }
