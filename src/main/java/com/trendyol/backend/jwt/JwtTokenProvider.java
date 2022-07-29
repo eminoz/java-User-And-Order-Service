@@ -1,7 +1,6 @@
 package com.trendyol.backend.jwt;
 
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -13,7 +12,7 @@ public class JwtTokenProvider {
     @Value("${questapp.app.secret}")
     private String APP_SECRET;
     @Value("${questapp.expires.in}")
-    private Long EXPIRES_IN;
+    private long EXPIRES_IN;
 
     public String generateJwtToken(Authentication authentication) {
         JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
