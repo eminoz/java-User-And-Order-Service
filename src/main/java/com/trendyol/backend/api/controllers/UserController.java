@@ -21,11 +21,6 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/createUser")
-    public DataResult<UserDto> createUser(@RequestBody User user) {
-        return this.userService.add(user);
-    }
-
     @GetMapping("/getUserById/{id}")
     public DataResult<User> getUserById(@PathVariable("id") String id) {
 

@@ -26,20 +26,6 @@ public class UserManager implements UserService {
 
 
     @Override
-    public DataResult<UserDto> add(User user) {
-        String email = user.getEmail();
-        User userByEmail = this.userDao.findOneUserByEmail(email);
-        if (userByEmail != null) {
-            final ErrorDataResult<UserDto> user_already_exist = new ErrorDataResult<>(null, "user already exist");
-            return user_already_exist;
-        }
-        final User insert = this.userDao.insert(user);
-        final UserDto userDto = this.modelMapper.map(insert, UserDto.class);//Burada kayıt frontende döneceğimiz verilere çevirmiş oluyoruz
-        return new
-                SuccessDataResult<>(userDto, "user created");
-    }
-
-    @Override
     public DataResult<User> getUserById(String id) {
         User userById = this.userDao.findUserById(id);
         if (userById == null) {

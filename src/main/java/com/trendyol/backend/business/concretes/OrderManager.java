@@ -1,21 +1,31 @@
 package com.trendyol.backend.business.concretes;
 
+import com.mongodb.client.result.UpdateResult;
 import com.trendyol.backend.business.abstracts.OrderService;
 import com.trendyol.backend.core.utilities.results.DataResult;
 import com.trendyol.backend.core.utilities.results.Result;
 import com.trendyol.backend.core.utilities.results.SuccessDataResult;
 import com.trendyol.backend.core.utilities.results.SuccessResult;
 import com.trendyol.backend.dataAccsess.abstracts.UserDao;
+import com.trendyol.backend.entities.concretes.ListOfOrder;
 import com.trendyol.backend.entities.concretes.User;
 import com.trendyol.backend.entities.dtos.UserDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
+
 
 @Service
 public class OrderManager implements OrderService {
     private UserDao userDao;
     private final ModelMapper modelMapper;
+    @Autowired
+    protected MongoTemplate mongoTemplate;
 
     @Autowired
     public OrderManager(UserDao userDao, ModelMapper modelMapper) {
@@ -28,6 +38,7 @@ public class OrderManager implements OrderService {
         User userById = this.userDao.findUserById(user.getId());
         userById.setListOfOrders(user.getListOfOrders());
         this.userDao.save(userById);
+
         return new SuccessResult("Order created");
     }
 
@@ -39,4 +50,17 @@ public class OrderManager implements OrderService {
         UserDto map = this.modelMapper.map(save, UserDto.class); // map user to userDto
         return new SuccessDataResult<>(map, "updated user");
     }
+
+    public void addOrder(User user) {
+        User id = mongoTemplate.findOne(Query.query(Criteria.where("id").is(user.getId())), User.class);
+        System.out.println(id);
+        user.getListOfOrders().forEach((j) -> {
+            System.out.println(j);
+            mongoTemplate.updateFirst(Query.query(Criteria.where("id").is(user.getId())), new Update().push("listOfOrders", j), User.class);
+        });
+    }
+
+
 }
+
+

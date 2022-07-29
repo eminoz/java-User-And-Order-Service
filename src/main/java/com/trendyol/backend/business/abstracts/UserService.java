@@ -8,7 +8,6 @@ import com.trendyol.backend.entities.dtos.UserDto;
 import java.util.List;
 
 public interface UserService {
-    DataResult<UserDto> add(User user);
 
     DataResult<User> getUserById(String id);
 
