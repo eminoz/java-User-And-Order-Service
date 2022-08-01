@@ -27,6 +27,9 @@ public class ProductManager implements ProductService {
     @Override
     public DataResult<Product> getByProductName(String productName) {
         Product productByProductName = this.productDao.findProductByProductName(productName);
+        if (productByProductName == null) {
+            return new ErrorDataResult<>(null, "product does not exist anymore");
+        }
         SuccessDataResult<Product> productSuccessDataResult = new SuccessDataResult<>(productByProductName, "found product");
         return productSuccessDataResult;
     }
