@@ -84,7 +84,7 @@ public class OrderManager implements OrderService {
             });
             userById.setTotalPrice(sum.get()); //set current user price
             OrderDto map = this.modelMapper.map(userById, OrderDto.class); // map user to orderDto
-            return new SuccessDataResult<>(map, "user orders");
+            return new SuccessDataResult<>(map, "user orders in here");
 
 
     }
