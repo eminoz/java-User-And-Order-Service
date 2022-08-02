@@ -6,6 +6,8 @@ import com.trendyol.backend.core.utilities.results.Result;
 import com.trendyol.backend.entities.concretes.User;
 import com.trendyol.backend.entities.dtos.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,9 +24,9 @@ public class UserController {
     }
 
     @GetMapping("/getUserById/{id}")
-    public DataResult<UserDto> getUserById(@PathVariable("id") String id) {
+    public ResponseEntity<?> getUserById(@PathVariable("id") String id) {
 
-        return this.userService.getUserById(id);
+        return ResponseEntity.ok(this.userService.getUserById(id));
     }
 
     @GetMapping("/getUserByEmail")

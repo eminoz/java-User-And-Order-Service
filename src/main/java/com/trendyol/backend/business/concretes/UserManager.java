@@ -28,6 +28,7 @@ public class UserManager implements UserService {
     @Override
     public DataResult<UserDto> getUserById(String id) {
         User userById = this.userDao.findUserById(id);
+        System.out.println(userById);
         if (userById == null) {
             ErrorDataResult<UserDto> user_not_found = new ErrorDataResult<>(null, "user not found");
             return user_not_found;

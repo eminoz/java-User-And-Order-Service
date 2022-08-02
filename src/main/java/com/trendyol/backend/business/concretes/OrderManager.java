@@ -9,7 +9,6 @@ import com.trendyol.backend.entities.dtos.OrderDto;
 import com.trendyol.backend.entities.dtos.UserDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.HashMapChangeSet;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -19,9 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -58,33 +55,28 @@ public class OrderManager implements OrderService {
     }
 
     @Override
-    public DataResult<OrderDto> getUserOrders(String id)  {
+    public DataResult<OrderDto> getUserOrders(String id) {
 
-            User userById = this.userDao.findUserById(id);//get user from user repo by id
-            if (userById.getListOfOrders() == null || userById.getListOfOrders().isEmpty()) {
-                ErrorDataResult<OrderDto> orderDtoErrorDataResult = new ErrorDataResult<>(null, "order is empty");
-                return orderDtoErrorDataResult;
-            }
-            AtomicInteger sum = new AtomicInteger();// introduce a atomic integer to sum total price
-            /*
-             * I fetched product price from product repository  for multiplication with quantity per order
-             *
-             * */
-            HashMap<String, Float> ProductMap = new HashMap<>();
-            DataResult<List<Product>> AllProduct = this.productManager.getAll();
+        User userById = this.userDao.findUserById(id);//get user from user repo by id
+        AtomicInteger sum = new AtomicInteger();// introduce a atomic integer to sum total price
+        /*
+         * I fetched product price from product repository  for multiplication with quantity per order
+         */
+        HashMap<String, Float> ProductMap = new HashMap<>();
+        DataResult<List<Product>> AllProduct = this.productManager.getAll();
 
-            AllProduct.getData().stream().forEach(e -> {
-                ProductMap.put(e.getProductName(),e.getPrice());
-            });
-            userById.getListOfOrders().stream().forEach(e -> {
-                Float aFloat = ProductMap.get(e.getProductId());
-                float v = e.getQuantity() * aFloat;
-                sum.addAndGet((int) v);
+        AllProduct.getData().stream().forEach(e -> {
+            ProductMap.put(e.getProductName(), e.getPrice());
+        });
+        userById.getListOfOrders().stream().forEach(e -> {
+            Float aFloat = ProductMap.get(e.getProductId());
+            float v = e.getQuantity() * aFloat;
+            sum.addAndGet((int) v);
 
-            });
-            userById.setTotalPrice(sum.get()); //set current user price
-            OrderDto map = this.modelMapper.map(userById, OrderDto.class); // map user to orderDto
-            return new SuccessDataResult<>(map, "user orders in here");
+        });
+        userById.setTotalPrice(sum.get()); //set current user price
+        OrderDto map = this.modelMapper.map(userById, OrderDto.class); // map user to orderDto
+        return new SuccessDataResult<>(map, "user orders in here");
 
 
     }

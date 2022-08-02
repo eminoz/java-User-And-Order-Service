@@ -7,11 +7,13 @@ import com.trendyol.backend.entities.concretes.User;
 import com.trendyol.backend.entities.dtos.LoginUserDto;
 import com.trendyol.backend.entities.dtos.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.Optional;
 
 @RestController
@@ -26,7 +28,7 @@ public class AuthUser {
     }
 
     @PostMapping("/create")
-    DataResult<UserDto> createNewUser(@RequestBody User user) {
+    DataResult<UserDto> createNewUser(@Valid @RequestBody User user) {
         DataResult<UserDto> user1 = this.authService.createUser(user);
         return user1;
     }

@@ -10,13 +10,8 @@ import com.trendyol.backend.entities.concretes.LoginUser;
 import com.trendyol.backend.entities.concretes.User;
 import com.trendyol.backend.entities.dtos.LoginUserDto;
 import com.trendyol.backend.entities.dtos.UserDto;
-import com.trendyol.backend.jwt.JwtTokenProvider;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.stereotype.Service;
 
 
@@ -24,16 +19,12 @@ import org.springframework.stereotype.Service;
 public class AuthManager implements AuthService {
     private UserDao userDao;
     private ModelMapper modelMapper;
-    private AuthenticationManager authenticationManager;
-    private JwtTokenProvider jwtTokenProvider;
-    private PasswordEncoder passwordEncoder;
 
-    public AuthManager(UserDao userDao, ModelMapper modelMapper, AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, PasswordEncoder passwordEncoder) {
+
+    public AuthManager(UserDao userDao, ModelMapper modelMapper) {
         this.userDao = userDao;
         this.modelMapper = modelMapper;
-        this.authenticationManager = authenticationManager;
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.passwordEncoder = passwordEncoder;
+
     }
 
     @Override
@@ -55,19 +46,8 @@ public class AuthManager implements AuthService {
 
     @Override
     public DataResult<LoginUserDto> login(LoginUser user) {
-        User oneUserByEmail = this.userDao.findOneUserByEmail(user.getEmail());
-        if (oneUserByEmail == null) {
-            DataResult<LoginUserDto> objectDataResult = new DataResult<>(null, false, "user not found with this email");
-            return objectDataResult;
-        }
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(user.getUserName(), user.getPassword());
-
-        Authentication authenticate = this.authenticationManager.authenticate(usernamePasswordAuthenticationToken);
-        System.out.println(authenticate);
-        SecurityContextHolder.getContext().setAuthentication(authenticate);
-        String token = this.jwtTokenProvider.generateJwtToken(authenticate);
-        LoginUserDto user_logged_in = new LoginUserDto("user logged in", oneUserByEmail.getId(), token);
-        DataResult<LoginUserDto> loginUserDtoDataResult = new DataResult<>(user_logged_in, true, "");
-        return loginUserDtoDataResult;
+        return null;
     }
+
+
 }
