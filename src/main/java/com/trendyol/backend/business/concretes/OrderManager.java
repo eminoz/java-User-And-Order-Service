@@ -7,6 +7,7 @@ import com.trendyol.backend.entities.concretes.Product;
 import com.trendyol.backend.entities.concretes.User;
 import com.trendyol.backend.entities.dtos.OrderDto;
 import com.trendyol.backend.entities.dtos.UserDto;
+import com.trendyol.backend.exception.NullException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -48,6 +49,9 @@ public class OrderManager implements OrderService {
     @Override
     public DataResult<UserDto> updateOrder(User user) {
         User userById = this.userDao.findUserById(user.getId());//find user
+        if (userById == null) {
+            throw new NullException("user not found with this " + userById.getId() + " id");
+        }
         userById.setListOfOrders(user.getListOfOrders());//set user order with post orders
         User save = this.userDao.save(userById);// update user order and save
         UserDto map = this.modelMapper.map(save, UserDto.class); // map user to userDto
@@ -58,13 +62,15 @@ public class OrderManager implements OrderService {
     public DataResult<OrderDto> getUserOrders(String id) {
 
         User userById = this.userDao.findUserById(id);//get user from user repo by id
+        if (userById == null) {
+            throw new NullException("user not found this " + id + " id");
+        }
         AtomicInteger sum = new AtomicInteger();// introduce a atomic integer to sum total price
         /*
          * I fetched product price from product repository  for multiplication with quantity per order
          */
         HashMap<String, Float> ProductMap = new HashMap<>();
         DataResult<List<Product>> AllProduct = this.productManager.getAll();
-
         AllProduct.getData().stream().forEach(e -> {
             ProductMap.put(e.getProductName(), e.getPrice());
         });
@@ -85,7 +91,6 @@ public class OrderManager implements OrderService {
         User id = mongoTemplate.findOne(Query.query(Criteria.where("id").is(user.getId())), User.class);
         System.out.println(id);
         user.getListOfOrders().forEach((j) -> {
-            System.out.println(j);
             mongoTemplate.updateFirst(Query.query(Criteria.where("id").is(user.getId())), new Update().push("listOfOrders", j), User.class);
         });
     }

@@ -4,6 +4,7 @@ import com.trendyol.backend.business.abstracts.ProductService;
 import com.trendyol.backend.core.utilities.results.*;
 import com.trendyol.backend.dataAccsess.abstracts.ProductDao;
 import com.trendyol.backend.entities.concretes.Product;
+import com.trendyol.backend.exception.NullException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +29,7 @@ public class ProductManager implements ProductService {
     public DataResult<Product> getByProductName(String productName) {
         Product productByProductName = this.productDao.findProductByProductName(productName);
         if (productByProductName == null) {
-            return new ErrorDataResult<>(null, "product does not exist anymore");
+            throw new NullException("product does not exist anymore");
         }
         SuccessDataResult<Product> productSuccessDataResult = new SuccessDataResult<>(productByProductName, "found product");
         return productSuccessDataResult;

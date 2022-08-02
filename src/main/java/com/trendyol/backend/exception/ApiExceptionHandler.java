@@ -24,11 +24,10 @@ public class ApiExceptionHandler {
         for (FieldError fieldError : exceptions.getBindingResult().getFieldErrors()) {
             validationErrors.put(fieldError.getField(), fieldError.getDefaultMessage());
         }
-
         ErrorDataResult<Object> errors = new ErrorDataResult<Object>(validationErrors, "Validation Error");
         return errors;
     }
-
+/*
     @ExceptionHandler(NullPointerException.class)//sistemde hata olursa bu methodu çağır hataları paramatre olarak geç
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorDataResult<Object> handleValidationException(NullPointerException exception) {
@@ -37,6 +36,7 @@ public class ApiExceptionHandler {
         ErrorDataResult<Object> errorDataResult = new ErrorDataResult<>(hashMap, "Null Pointer Exception");
         return errorDataResult;
     }
+*/
 
 
 }

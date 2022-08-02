@@ -5,6 +5,7 @@ import com.trendyol.backend.core.utilities.results.*;
 import com.trendyol.backend.dataAccsess.abstracts.UserDao;
 import com.trendyol.backend.entities.concretes.User;
 import com.trendyol.backend.entities.dtos.UserDto;
+import com.trendyol.backend.exception.NotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,10 +29,9 @@ public class UserManager implements UserService {
     @Override
     public DataResult<UserDto> getUserById(String id) {
         User userById = this.userDao.findUserById(id);
-        System.out.println(userById);
+
         if (userById == null) {
-            ErrorDataResult<UserDto> user_not_found = new ErrorDataResult<>(null, "user not found");
-            return user_not_found;
+            throw new NotFoundException("not found by this " + id + " id");
         }
         UserDto map = this.modelMapper.map(userById, UserDto.class);
         return new SuccessDataResult<>(map, "user found");
@@ -41,8 +41,7 @@ public class UserManager implements UserService {
     public DataResult<UserDto> getUserByEmail(String email) {
         User userByEmail = this.userDao.findOneUserByEmail(email);
         if (userByEmail == null) {
-            final ErrorDataResult<UserDto> user_not_found = new ErrorDataResult<>(null, "user not found");
-            return user_not_found;
+            throw new NotFoundException("user not found with this " + email + " email");
         }
         UserDto map = this.modelMapper.map(userByEmail, UserDto.class);
         SuccessDataResult<UserDto> user_found_by_email = new SuccessDataResult<>(map, "user found by email");
@@ -63,8 +62,7 @@ public class UserManager implements UserService {
     public Result deleteUserByEmail(String email) {
         int s = this.userDao.deleteByEmail(email);
         if (s == 0) {
-            ErrorResult errorResult = new ErrorResult("User could not delete");
-            return errorResult;
+            throw new NotFoundException("User could not delete");
         }
         SuccessResult successResult = new SuccessResult("User deleted");
         return successResult;
@@ -74,7 +72,7 @@ public class UserManager implements UserService {
     public Result updateEmailUserById(User user, String id) {
         User oneUserByEmail = this.userDao.findOneUserByEmail(user.getEmail());
         if (oneUserByEmail != null) {
-            return new ErrorResult("already exist in this emial");
+            return new ErrorResult("already exist in this email");
         }
         User userById = this.userDao.findUserById(id);//find user
         userById.setEmail(user.getEmail());//set user email who found
