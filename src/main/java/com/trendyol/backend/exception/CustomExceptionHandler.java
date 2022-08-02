@@ -14,4 +14,10 @@ public class CustomExceptionHandler {
         ErrorResult errorResult = new ErrorResult(notFoundException.getMessage());
         return new ResponseEntity<>(errorResult, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(AlreadyExist.class)
+    public ResponseEntity<?> alreadyExist(AlreadyExist alreadyExist) {
+        ErrorResult errorResult = new ErrorResult(alreadyExist.getMessage());
+        return new ResponseEntity<>(errorResult, HttpStatus.ALREADY_REPORTED);
+    }
 }

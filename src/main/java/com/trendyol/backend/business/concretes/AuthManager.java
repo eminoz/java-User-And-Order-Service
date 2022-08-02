@@ -10,6 +10,7 @@ import com.trendyol.backend.entities.concretes.LoginUser;
 import com.trendyol.backend.entities.concretes.User;
 import com.trendyol.backend.entities.dtos.LoginUserDto;
 import com.trendyol.backend.entities.dtos.UserDto;
+import com.trendyol.backend.exception.AlreadyExist;
 import org.modelmapper.ModelMapper;
 
 import org.springframework.stereotype.Service;
@@ -33,8 +34,7 @@ public class AuthManager implements AuthService {
         String email = user.getEmail();
         User userByEmail = this.userDao.findOneUserByEmail(email);
         if (userByEmail != null) {
-            final ErrorDataResult<UserDto> user_already_exist = new ErrorDataResult<>(null, "user already exist");
-            return user_already_exist;
+            throw new AlreadyExist("User Already exist this " + email + " email");
         }
         // user.setPassword(this.passwordEncoder.encode(user.getPassword()));
         user.setPassword(user.getPassword());
